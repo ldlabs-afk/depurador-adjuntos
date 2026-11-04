@@ -86,3 +86,10 @@ def test_req01_07_ruta_por_defecto_es_la_de_prueba(monkeypatch):
     monkeypatch.delenv("DEPURADOR_RAIZ", raising=False)
     monkeypatch.delenv("DEPURADOR_CARPETA", raising=False)
     assert depurador.resolver_carpeta(None) == depurador.CARPETA_PRUEBA.resolve()
+
+
+def test_req01_02_omite_temporales_de_office(entorno):
+    temporal = crear(entorno, "~$acta_enero.docx")
+    (entorno / "respaldados.txt").write_text("~$acta_enero.docx\n", encoding="utf-8")
+    depurador.depurar(entorno, dias=30, ejecutar=True)
+    assert temporal.exists()

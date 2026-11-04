@@ -93,7 +93,7 @@ def seleccionar(carpeta: Path, dias: int, ahora: float | None = None) -> list[Pa
     limite = (ahora if ahora is not None else time.time()) - dias * SEGUNDOS_POR_DIA
     seleccion = []
     for entrada in sorted(carpeta.iterdir()):
-        if entrada.name == MANIFIESTO:
+        if entrada.name == MANIFIESTO or entrada.name.startswith("~$"):
             continue
         if entrada.is_symlink():
             log.warning("OMITIDO enlace simbólico: %s", entrada.name)
