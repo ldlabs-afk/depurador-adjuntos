@@ -93,3 +93,14 @@ def test_req01_02_omite_temporales_de_office(entorno):
     (entorno / "respaldados.txt").write_text("~$acta_enero.docx\n", encoding="utf-8")
     depurador.depurar(entorno, dias=30, ejecutar=True)
     assert temporal.exists()
+
+
+def test_req01_02_conserva_acta_no_respaldada(entorno):
+    import shutil
+    from pathlib import Path
+    origen = Path(__file__).parent / "fixtures" / "acta_asamblea_marzo.txt"
+    copia = entorno / origen.name
+    shutil.copy(origen, copia)
+    os.utime(copia, (HACE_60_DIAS, HACE_60_DIAS))
+    depurador.depurar(entorno, dias=30, ejecutar=True)
+    assert copia.exists()
