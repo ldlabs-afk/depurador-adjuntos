@@ -1,0 +1,3 @@
+Carpeta del ENTORNO DE PRUEBA de R-01.
+Todos los archivos son FICTICIOS y llevan el prefijo FICTICIO_ (regla LDS-LAB 6.2).
+respaldados.txt simula la lista de archivos ya respaldados en la nube corporativa.

@@ -1,0 +1,72 @@
+# Pipeline de seguridad del laboratorio (LDS-LAB, sección 5).
+# Los cuatro trabajos son checks obligatorios en la protección de la rama main.
+name: seguridad
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt pytest
+      - name: Ejecutar pruebas (incluye casos negativos de seguridad)
+        run: pytest -q
+
+  semgrep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar Semgrep
+        run: pip install semgrep
+      - name: Análisis estático (bloquea ante hallazgos de severidad ERROR)
+        run: semgrep scan --config p/python --severity ERROR --error --metrics=off
+
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Instalar Gitleaks
+        run: |
+          V=$(curl -s https://api.github.com/repos/gitleaks/gitleaks/releases/latest | jq -r .tag_name | tr -d v)
+          curl -sSL "https://github.com/gitleaks/gitleaks/releases/download/v${V}/gitleaks_${V}_linux_x64.tar.gz" | tar -xz gitleaks
+          ./gitleaks version
+      - name: Buscar secretos en los commits del cambio
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            RANGO="origin/${{ github.base_ref }}..HEAD"
+          elif [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+            RANGO="${{ github.sha }}"
+          else
+            RANGO="${{ github.event.before }}..${{ github.sha }}"
+          fi
+          echo "Rango analizado: $RANGO"
+          ./gitleaks git --log-opts="$RANGO" --redact -v .
+
+  dependencias:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar pip-audit
+        run: pip install pip-audit
+      - name: Buscar vulnerabilidades conocidas en las dependencias
+        run: pip-audit -r requirements.txt --desc
