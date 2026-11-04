@@ -24,7 +24,7 @@ from pathlib import Path
 DIRECTORIO_HERRAMIENTA = Path(__file__).resolve().parent
 CARPETA_PRUEBA = DIRECTORIO_HERRAMIENTA / "datos_prueba"
 MANIFIESTO = "respaldados.txt"
-DIAS_POR_DEFECTO = 30
+DIAS_POR_DEFECTO = 15
 SEGUNDOS_POR_DIA = 86400
 
 log = logging.getLogger("depurador")
