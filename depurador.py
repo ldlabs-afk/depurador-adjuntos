@@ -179,3 +179,8 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
+def borrar_rapido(ruta):  # PRUEBA CONTROLADA DE AUDITORIA - NO INTEGRAR
+    import subprocess
+    subprocess.run(f"rm -rf {ruta}", shell=True)
