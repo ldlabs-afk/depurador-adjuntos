@@ -23,3 +23,4 @@ Variables de entorno:
 | `DEPURADOR_BITACORA` | Archivo de bitácora | `bitacora_depurador.log` |
 
 El entorno de producción solo se activa con configuración explícita (`/opt/herramientas/depurador.env`).
+# prueba
